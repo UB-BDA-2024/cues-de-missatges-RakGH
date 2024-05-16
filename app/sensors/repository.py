@@ -113,7 +113,7 @@ def record_data(redis: Session, sensor_id: int, data: schemas.SensorData, cassan
 
 
 def get_data(redis: Session, sensor_id: int, db: Session, timescale: Session, from_: str = None, to: str = None, bucket: str = None) -> schemas.Sensor:
-    print("enter")
+    
     # Mirem el que ens estan demanant
     if to:
         dic = {'hour': '1 h', 'day': '1 day', 'week': '1 week', 'month': '1 month', 'year': '1 year'}
@@ -167,6 +167,9 @@ def get_data(redis: Session, sensor_id: int, db: Session, timescale: Session, fr
 
         return data
     else:
+        print("enter")
+        print(db)
+        print(timescale)
         data_str = redis._client.get(sensor_id)
 
         decoded_data =data_str.decode()
