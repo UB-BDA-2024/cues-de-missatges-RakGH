@@ -112,7 +112,7 @@ def record_data(redis: Session, sensor_id: int, data: schemas.SensorData, cassan
     return redis._client.set(sensor_id, db_sensordata)
 
 
-def get_data(redis: Session, sensor_id: int, db: Session, timescale: Session, mongodb_client: Session, from_: str = None, to: str = None, bucket: str = None) -> schemas.Sensor:
+def get_data(redis: Session, sensor_id: int, db: Session, mongodb_client: Session, timescale: Session = None,  from_: str = None, to: str = None, bucket: str = None) -> schemas.Sensor:
     
     # Mirem el que ens estan demanant
     if to:
@@ -214,7 +214,7 @@ def get_sensors_near(mongodb: Session, latitude: float, longitude: float, radius
     dataSensors = []
     for sensor in sensors:
         db_sensor = get_sensor(db, sensor['id'], mongodb)
-        data_sensor = get_data(redis, sensor['id'], db_sensor)
+        data_sensor = get_data(redis, sensor['id'], db_sensor, mongodb)
         dataSensors.append(data_sensor)
     
     return json.dumps(dataSensors, indent=4)
