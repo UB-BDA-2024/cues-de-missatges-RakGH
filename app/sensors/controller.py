@@ -151,5 +151,6 @@ def get_data(sensor_id: int, bucket: str = None, to: str = None, from_: str = No
     db_sensor = repository.get_sensor(db, sensor_id, mongodb_client)
     if db_sensor is None:
         raise HTTPException(status_code=404, detail="Sensor not found")
+    print(bucket, to, from_)
     return repository.get_data(redis=redis_client, sensor_id=sensor_id, db=db, from_=from_, to=to, bucket=bucket, timescale=timescale)
     

@@ -112,8 +112,8 @@ def record_data(redis: Session, sensor_id: int, data: schemas.SensorData, cassan
     return redis._client.set(sensor_id, db_sensordata)
 
 
-def get_data(redis: Session, sensor_id: int, db: Session, from_: str, to: str, bucket: str, timescale: Session) -> schemas.Sensor:
-    
+def get_data(redis: Session, sensor_id: int, db: Session, timescale: Session, from_: str = None, to: str = None, bucket: str = None) -> schemas.Sensor:
+    print("enter")
     # Mirem el que ens estan demanant
     if to:
         dic = {'hour': '1 h', 'day': '1 day', 'week': '1 week', 'month': '1 month', 'year': '1 year'}
