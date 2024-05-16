@@ -155,7 +155,7 @@ def test_post_sensor_data_temperatura_1():
     assert response.status_code == 200
 
 # Test pressent a les pràctiques: Documental
-def test_get_sensor_1_data():
+def test_get_sensor_1_data_update():
     """We can get a sensor by its id"""
     response = client.get("/sensors/1/data")
     assert response.status_code == 200
@@ -210,7 +210,7 @@ def test_post_sensor_data_veolicitat_hora_3():
     assert response.status_code == 200
 
 # Test pressent a les pràctiques: Documental
-def test_get_sensor_2_data():
+def test_get_sensor_2_data_update():
     """We can get a sensor by its id"""
     response = client.get("/sensors/2/data")
     assert response.status_code == 200

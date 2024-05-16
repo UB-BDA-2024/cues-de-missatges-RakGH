@@ -213,7 +213,7 @@ def get_sensors_near(mongodb: Session, latitude: float, longitude: float, radius
     sensors = mycol.find(query)
     dataSensors = []
     for sensor in sensors:
-        db_sensor = get_sensor(db, sensor['id'])
+        db_sensor = get_sensor(db, sensor['id'], mongodb)
         data_sensor = get_data(redis, sensor['id'], db_sensor)
         dataSensors.append(data_sensor)
     
