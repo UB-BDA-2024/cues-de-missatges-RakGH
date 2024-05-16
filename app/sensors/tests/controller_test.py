@@ -38,18 +38,42 @@ def clear_dbs():
             time.sleep(2)
 
 
-# Test pressent a les pràctiques: Columnars, Temporals, Indexos
+# Test pressent a les pràctiques: Columnars, Temporals, Indexos, Documental
 def test_create_sensor_temperatura_1():
     """A sensor can be properly created"""
     response = client.post("/sensors", json={"name": "Sensor Temperatura 1", "latitude": 1.0, "longitude": 1.0, "type": "Temperatura", "mac_address": "00:00:00:00:00:00", "manufacturer": "Dummy", "model":"Dummy Temp", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de temperatura model Dummy Temp del fabricant Dummy"})
     assert response.status_code == 200
     assert response.json() == {"id": 1, "name": "Sensor Temperatura 1", "latitude": 1.0, "longitude": 1.0, "type": "Temperatura", "mac_address": "00:00:00:00:00:00", "manufacturer": "Dummy", "model":"Dummy Temp", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de temperatura model Dummy Temp del fabricant Dummy"}
 
-# Test pressent a les pràctiques: Columnars, Temporals, Indexos
+# Test pressent a les pràctiques: Columnars, Temporals, Indexos, Documental
 def test_create_sensor_velocitat_1():
     response = client.post("/sensors", json={"name": "Velocitat 1", "latitude": 1.0, "longitude": 1.0, "type": "Velocitat", "mac_address": "00:00:00:00:00:01", "manufacturer": "Dummy", "model":"Dummy Vel", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 1"})
     assert response.status_code == 200
     assert response.json() == {"id": 2, "name": "Velocitat 1", "latitude": 1.0, "longitude": 1.0, "type": "Velocitat", "mac_address": "00:00:00:00:00:01", "manufacturer": "Dummy", "model":"Dummy Vel", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 1"}
+
+# Test pressent a les pràctiques: Documental
+def test_redis_connection():
+    redis_client = RedisClient(host="redis")
+    assert redis_client.ping()
+    redis_client.close()
+
+# Test pressent a les pràctiques: Documental
+def test_mongodb_connection():
+    mongodb_client = MongoDBClient(host="mongodb")
+    assert mongodb_client.ping()
+    mongodb_client.close()
+
+# Test pressent a les pràctiques: Documental
+def test_post_sensor_data_not_exists():
+    response = client.post("/sensors/3/data", json={"temperature": 1.0, "humidity": 1.0, "battery_level": 1.0, "last_seen": "2020-01-01T00:00:00.000Z"})
+    assert response.status_code == 404
+    assert "Sensor not found" in response.text
+
+# Test pressent a les pràctiques: Documental
+def test_get_sensor_data_not_exists():
+    response = client.get("/sensors/3/data")
+    assert response.status_code == 404
+    assert "Sensor not found" in response.text
 
 # Test pressent a les pràctiques: Columnars, Temporals, Indexos
 def test_create_sensor_velocitat_2():
@@ -97,11 +121,6 @@ def test_create_sensor_temperatura_2():
     assert response.status_code == 200
     assert response.json() == {"id": 4, "name": "Sensor Temperatura 2", "latitude": 2.0, "longitude": 2.0, "type": "Temperatura", "mac_address": "00:00:00:00:00:03", "manufacturer": "Dummy", "model":"Dummy Temp", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de temperatura model Dummy Temp del fabricant Dummy"}
 
-# Test pressent a les pràctiques: Columnars, Temporals
-def test_post_sensor_data_temperatura_1():
-    response = client.post("/sensors/1/data", json={"temperature": 1.0, "humidity": 1.0, "battery_level": 1.0, "last_seen": "2020-01-01T00:00:00.000Z"})
-    assert response.status_code == 200
-
 # Test pressent a les pràctiques: Temporals
 def test_post_sensor_data_dia_2():
     response = client.post("/sensors/1/data", json={"temperature": 15.0, "humidity": 1.0, "battery_level": 1.0, "last_seen": "2020-01-02T00:00:00.000Z"})
@@ -112,10 +131,41 @@ def test_post_sensor_data_dia_3():
     response = client.post("/sensors/1/data", json={"temperature": 18.0, "humidity": 1.0, "battery_level": 0.9, "last_seen": "2020-01-03T00:00:00.000Z"})
     assert response.status_code == 200
 
-# Test pressent a les pràctiques: Columnars
+# Test pressent a les pràctiques: Columnars, Documental
 def test_post_sensor_data_temperatura_2():
     response = client.post("/sensors/1/data", json={"temperature": 4.0, "humidity": 1.0, "battery_level": 1.0, "last_seen": "2020-01-01T00:00:00.000Z"})
     assert response.status_code == 200
+
+# Test pressent a les pràctiques: Documental
+def test_get_sensor_1_data():
+    """We can get a sensor by its id"""
+    response = client.get("/sensors/1/data")
+    assert response.status_code == 200
+    json = response.json()
+    assert json["id"] == 1
+    assert json["name"] == "Sensor Temperatura 1"
+    assert json["temperature"] == 4.0
+    assert json["humidity"] == 1.0
+    assert json["battery_level"] == 1.0
+    assert json["last_seen"] == "2020-01-01T00:00:00.000Z"
+
+# Test pressent a les pràctiques: Columnars, Temporals, Documental
+def test_post_sensor_data_temperatura_1():
+    response = client.post("/sensors/1/data", json={"temperature": 1.0, "humidity": 1.0, "battery_level": 1.0, "last_seen": "2020-01-01T00:00:00.000Z"})
+    assert response.status_code == 200
+
+# Test pressent a les pràctiques: Documental
+def test_get_sensor_1_data():
+    """We can get a sensor by its id"""
+    response = client.get("/sensors/1/data")
+    assert response.status_code == 200
+    json = response.json()
+    assert json["id"] == 1
+    assert json["name"] == "Sensor Temperatura 1"
+    assert json["temperature"] == 1.0
+    assert json["humidity"] == 1.0
+    assert json["battery_level"] == 1.0
+    assert json["last_seen"] == "2020-01-01T00:00:00.000Z"
 
 # Test pressent a les pràctiques: Columnars
 def test_post_sensor_data_temperatura_3():
@@ -137,15 +187,39 @@ def test_post_sensor_data_veolicitat_hora_2():
     response = client.post("/sensors/2/data", json={"velocity": 15.0, "battery_level": 1.0, "last_seen": "2020-01-01T01:00:00.000Z"})
     assert response.status_code == 200
 
-# Test pressent a les pràctiques: Temporals
+# Test pressent a les pràctiques: Columnars, Documental
+def test_post_sensor_data_veolicitat_1():
+    response = client.post("/sensors/2/data", json={"velocity": 1.0, "battery_level": 0.1, "last_seen": "2020-01-01T00:00:00.000Z"})
+    assert response.status_code == 200
+
+# Test pressent a les pràctiques: Documental
+def test_get_sensor_2_data():
+    """We can get a sensor by its id"""
+    response = client.get("/sensors/2/data")
+    assert response.status_code == 200
+    json = response.json()
+    assert json["id"] == 2
+    assert json["name"] == "Velocitat 1"
+    assert json["velocity"] == 1.0
+    assert json["battery_level"] == 0.1
+    assert json["last_seen"] == "2020-01-01T00:00:00.000Z"
+
+# Test pressent a les pràctiques: Temporals, Documental
 def test_post_sensor_data_veolicitat_hora_3():
     response = client.post("/sensors/2/data", json={"velocity": 18.0, "battery_level": 0.9, "last_seen": "2020-01-01T02:00:00.000Z"})
     assert response.status_code == 200
 
-# Test pressent a les pràctiques: Columnars
-def test_post_sensor_data_veolicitat_1():
-    response = client.post("/sensors/2/data", json={"velocity": 1.0, "battery_level": 0.1, "last_seen": "2020-01-01T00:00:00.000Z"})
+# Test pressent a les pràctiques: Documental
+def test_get_sensor_2_data():
+    """We can get a sensor by its id"""
+    response = client.get("/sensors/2/data")
     assert response.status_code == 200
+    json = response.json()
+    assert json["id"] == 2
+    assert json["name"] == "Velocitat 1"
+    assert json["velocity"] == 18.0
+    assert json["battery_level"] == 0.9
+    assert json["last_seen"] == "2020-01-01T02:00:00.000Z"
 
 # Test pressent a les pràctiques: Temporals
 def test_post_sensor_data_veolicitat_week_1():
@@ -313,3 +387,30 @@ def test_search_sensors_description_similar():
         {"id": 4, "name": "Sensor Temperatura 2", "latitude": 2.0, "longitude": 2.0, "type": "Temperatura", "mac_address": "00:00:00:00:00:03", "manufacturer": "Dummy", "model":"Dummy Temp", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de temperatura model Dummy Temp del fabricant Dummy"},
         {"id": 2, "name": "Velocitat 1", "latitude": 1.0, "longitude": 1.0, "type": "Velocitat", "mac_address": "00:00:00:00:00:01", "manufacturer": "Dummy", "model": "Dummy Vel", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 1"},
         {"id": 3, "name": "Velocitat 2", "latitude": 2.0, "longitude": 2.0, "type": "Velocitat", "mac_address": "00:00:00:00:00:02", "manufacturer": "Dummy", "model": "Dummy Vel", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 2"}]  
+    
+# Test pressent a les pràctiques: Documental
+def test_get_near():
+    response = client.get("/sensors/near?latitude=1.0&longitude=1.0&radius=1")
+    assert response.status_code == 200
+    json = response.json()
+    assert json[0]["id"] == 1
+    assert json[0]["name"] == "Sensor Temperatura 1"
+    assert json[0]["temperature"] == 1.0
+    assert json[0]["humidity"] == 1.0
+    assert json[0]["battery_level"] == 1.0
+    assert json[0]["last_seen"] == "2020-01-01T00:00:00.000Z"
+    assert json[1]["id"] == 2
+    assert json[1]["name"] == "Velocitat 1"
+    assert json[1]["velocity"] == 18.0
+    assert json[1]["battery_level"] == 0.9
+    assert json[1]["last_seen"] == "2020-01-01T02:00:00.000Z"
+
+# Test pressent a les pràctiques: Documental
+def test_delete_sensor_1():
+    response = client.delete("/sensors/1")
+    assert response.status_code == 200
+
+# Test pressent a les pràctiques: Documental
+def test_delete_sensor_2():
+    response = client.delete("/sensors/2")
+    assert response.status_code == 200
