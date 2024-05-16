@@ -38,12 +38,24 @@ def clear_dbs():
             time.sleep(2)
 
 
-# Test pressent a les pràctiques: Columnars, Temporals, Indexos, Documental
+# Test pressent a les pràctiques: Columnars, Temporals, Indexos, Documental, Clau-valor
 def test_create_sensor_temperatura_1():
     """A sensor can be properly created"""
     response = client.post("/sensors", json={"name": "Sensor Temperatura 1", "latitude": 1.0, "longitude": 1.0, "type": "Temperatura", "mac_address": "00:00:00:00:00:00", "manufacturer": "Dummy", "model":"Dummy Temp", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de temperatura model Dummy Temp del fabricant Dummy"})
     assert response.status_code == 200
     assert response.json() == {"id": 1, "name": "Sensor Temperatura 1", "latitude": 1.0, "longitude": 1.0, "type": "Temperatura", "mac_address": "00:00:00:00:00:00", "manufacturer": "Dummy", "model":"Dummy Temp", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de temperatura model Dummy Temp del fabricant Dummy"}
+
+# Test pressent a les pràctiques: Clau-valor
+def test_post_sensor_data_not_exists():
+    response = client.post("/sensors/2/data", json={"temperature": 1.0, "humidity": 1.0, "battery_level": 1.0, "last_seen": "2020-01-01T00:00:00.000Z"})
+    assert response.status_code == 404
+    assert "Sensor not found" in response.text
+
+# Test pressent a les pràctiques: Clau-valor
+def test_get_sensor_data_not_exists():
+    response = client.get("/sensors/2/data")
+    assert response.status_code == 404
+    assert "Sensor not found" in response.text
 
 # Test pressent a les pràctiques: Columnars, Temporals, Indexos, Documental
 def test_create_sensor_velocitat_1():
@@ -51,7 +63,7 @@ def test_create_sensor_velocitat_1():
     assert response.status_code == 200
     assert response.json() == {"id": 2, "name": "Velocitat 1", "latitude": 1.0, "longitude": 1.0, "type": "Velocitat", "mac_address": "00:00:00:00:00:01", "manufacturer": "Dummy", "model":"Dummy Vel", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 1"}
 
-# Test pressent a les pràctiques: Documental
+# Test pressent a les pràctiques: Documental, Clau-valor
 def test_redis_connection():
     redis_client = RedisClient(host="redis")
     assert redis_client.ping()
@@ -149,12 +161,12 @@ def test_get_sensor_1_data():
     assert json["battery_level"] == 1.0
     assert json["last_seen"] == "2020-01-01T00:00:00.000Z"
 
-# Test pressent a les pràctiques: Columnars, Temporals, Documental
+# Test pressent a les pràctiques: Columnars, Temporals, Documental, Clau-valor
 def test_post_sensor_data_temperatura_1():
     response = client.post("/sensors/1/data", json={"temperature": 1.0, "humidity": 1.0, "battery_level": 1.0, "last_seen": "2020-01-01T00:00:00.000Z"})
     assert response.status_code == 200
 
-# Test pressent a les pràctiques: Documental
+# Test pressent a les pràctiques: Documental, Clau-valor
 def test_get_sensor_1_data_update():
     """We can get a sensor by its id"""
     response = client.get("/sensors/1/data")
