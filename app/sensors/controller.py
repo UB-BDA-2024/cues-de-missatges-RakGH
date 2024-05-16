@@ -67,8 +67,8 @@ router = APIRouter(
 # 🙋🏽‍♀️ Add here the route to get a list of sensors near to a given location
 @router.get("/near")
 def get_sensors_near(latitude: float, longitude: float, db: Session = Depends(get_db),mongodb_client: MongoDBClient = Depends(get_mongodb_client)):
-    raise HTTPException(status_code=404, detail="Not implemented")
-    #return repository.get_sensors_near(db=db,mongodb=mongodb_client, latitude=latitude, longitude=longitude)
+    #raise HTTPException(status_code=404, detail="Not implemented")
+    return repository.get_sensors_near(db=db,mongodb=mongodb_client, latitude=latitude, longitude=longitude)
 
 
 # 🙋🏽‍♀️ Add here the route to search sensors by query to Elasticsearch
@@ -80,8 +80,8 @@ def get_sensors_near(latitude: float, longitude: float, db: Session = Depends(ge
 # - mongodb_client: mongodb client
 @router.get("/search")
 def search_sensors(query: str, size: int = 10, search_type: str = "match", db: Session = Depends(get_db), mongodb_client: MongoDBClient = Depends(get_mongodb_client), es: ElasticsearchClient = Depends(get_elastic_search)):
-    raise HTTPException(status_code=404, detail="Not implemented")
-    #return repository.search_sensors(db=db,mongodb=mongodb_client, query=query, size=size, search_type=search_type)
+    #raise HTTPException(status_code=404, detail="Not implemented")
+    return repository.search_sensors(db=db,mongodb=mongodb_client, query=query, size=size, search_type=search_type)
 
 # 🙋🏽‍♀️ Add here the route to get the temperature values of a sensor
 
