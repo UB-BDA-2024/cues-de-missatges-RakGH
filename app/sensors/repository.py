@@ -112,7 +112,7 @@ def record_data(redis: Session, sensor_id: int, data: schemas.SensorData, cassan
     return redis._client.set(sensor_id, db_sensordata)
 
 
-def get_data(redis: Session, sensor_id: int, db: Session, timescale: Session, from_: str = None, to: str = None, bucket: str = None) -> schemas.Sensor:
+def get_data(redis: Session, sensor_id: int, db: Session, timescale: Session, mongodb_client: Session, from_: str = None, to: str = None, bucket: str = None) -> schemas.Sensor:
     
     # Mirem el que ens estan demanant
     if to:
@@ -167,15 +167,12 @@ def get_data(redis: Session, sensor_id: int, db: Session, timescale: Session, fr
 
         return data
     else:
-        print("enter")
-        print(db)
-        print(timescale)
         data_str = redis._client.get(sensor_id)
 
         decoded_data =data_str.decode()
         db_sensordata = json.loads(decoded_data)
         db_sensordata['id'] = sensor_id
-        db_sensordata['name'] = get_data(sensor_id, db).name
+        db_sensordata['name'] = get_sensor(db, sensor_id, mongodb_client)['name']
         return db_sensordata
     
     
